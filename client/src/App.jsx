@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import PortfolioCharts from "./components/PortfolioCharts";
 import PortfolioTable from "./components/PortfolioTable";
 import UploadCSV from "./components/UploadCSV";
 import { fetchStockData } from "./utils/stockData";
@@ -24,11 +25,14 @@ function App() {
       <h1 className="text-3xl font-bold text-center">FolioBasic</h1>
       <UploadCSV onUpload={setPortfolioData} />
       {portfolioData.length > 0 && (
-        <PortfolioTable
-          data={portfolioData}
-          stockData={stockData}
-          loading={loading}
-        />
+        <>
+          <PortfolioTable
+            data={portfolioData}
+            stockData={stockData}
+            loading={loading}
+          />
+          <PortfolioCharts data={portfolioData} stockData={stockData} />
+        </>
       )}
     </div>
   );
