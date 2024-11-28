@@ -1,25 +1,34 @@
-import { useState, useEffect } from 'react';
-import UploadCSV from './components/UploadCSV';
-import PortfolioTable from './components/PortfolioTable';
-import { fetchStockData } from './utils/stockData';
+import { useEffect, useState } from "react";
+import PortfolioTable from "./components/PortfolioTable";
+import UploadCSV from "./components/UploadCSV";
+import { fetchStockData } from "./utils/stockData";
 
 function App() {
   const [portfolioData, setPortfolioData] = useState([]);
   const [stockData, setStockData] = useState({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (portfolioData.length > 0) {
       const tickers = portfolioData.map((row) => row.Ticker);
-      fetchStockData(tickers, portfolioData).then(setStockData);
+
+      setLoading(true);
+      fetchStockData(tickers, portfolioData)
+        .then(setStockData)
+        .finally(() => setLoading(false));
     }
-  }, [portfolioData]);  
+  }, [portfolioData]);
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold text-center mb-4">FolioBasic</h1>
+      <h1 className="text-3xl font-bold text-center">FolioBasic</h1>
       <UploadCSV onUpload={setPortfolioData} />
       {portfolioData.length > 0 && (
-        <PortfolioTable data={portfolioData} stockData={stockData} />
+        <PortfolioTable
+          data={portfolioData}
+          stockData={stockData}
+          loading={loading}
+        />
       )}
     </div>
   );

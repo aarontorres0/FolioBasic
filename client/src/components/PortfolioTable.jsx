@@ -1,4 +1,12 @@
-const PortfolioTable = ({ data, stockData }) => {
+const PortfolioTable = ({ data, stockData, loading }) => {
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-40">
+        <span className="loading loading-spinner loading-lg text-blue-500"></span>
+      </div>
+    );
+  }
+
   const calculateRow = (row, totalPortfolioValue) => {
     const price = stockData[row.Ticker]?.price || 0;
     const name = stockData[row.Ticker]?.name || "Unknown";
@@ -7,7 +15,6 @@ const PortfolioTable = ({ data, stockData }) => {
     const totalGainLoss = totalValue - costBasis;
     const percentGainLoss = (totalGainLoss / costBasis) * 100;
 
-    // Calculate individual portfolio percentage
     const portfolioPercentage = totalPortfolioValue
       ? (totalValue / totalPortfolioValue) * 100
       : 0;
@@ -23,7 +30,6 @@ const PortfolioTable = ({ data, stockData }) => {
     };
   };
 
-  // Calculate all rows
   const totalPortfolioValue = data.reduce((sum, row) => {
     const price = stockData[row.Ticker]?.price || 0;
     return sum + price * row.Quantity;
@@ -33,7 +39,6 @@ const PortfolioTable = ({ data, stockData }) => {
     calculateRow(row, totalPortfolioValue)
   );
 
-  // Calculate summary values
   const totalGainLoss = enhancedData.reduce(
     (sum, row) => sum + row["Total Gain/Loss"],
     0
@@ -45,38 +50,33 @@ const PortfolioTable = ({ data, stockData }) => {
   const percentTotalGainLoss = (totalGainLoss / totalCostBasis) * 100;
 
   return (
-    <div className="overflow-x-auto p-4">
-      <table className="table-auto w-full bg-white border border-gray-300 shadow-lg rounded-lg overflow-hidden">
-        <thead className="bg-gray-100 text-gray-700">
-          <tr>
-            <th className="px-4 py-2 text-left">Ticker</th>
-            <th className="px-4 py-2 text-left">Name</th>
-            <th className="px-4 py-2 text-left">Cost Basis</th>
-            <th className="px-4 py-2 text-left">Shares</th>
-            <th className="px-4 py-2 text-left">Price</th>
-            <th className="px-4 py-2 text-left">Total Value</th>
-            <th className="px-4 py-2 text-left">Portfolio %</th>
-            <th className="px-4 py-2 text-left">Total Gain/Loss</th>
-            <th className="px-4 py-2 text-left">% Total Gain/Loss</th>
+    <div className="overflow-x-auto p-4 rounded-lg shadow-lg border">
+      <table className="table table-zebra w-full">
+        <thead>
+          <tr className="bg-base-200 text-lg">
+            <th className="text-left">Ticker</th>
+            <th className="text-left">Name</th>
+            <th className="text-left">Cost Basis</th>
+            <th className="text-left">Shares</th>
+            <th className="text-left">Price</th>
+            <th className="text-left">Total Value</th>
+            <th className="text-left">Portfolio %</th>
+            <th className="text-left">Total Gain/Loss</th>
+            <th className="text-left">% Total Gain/Loss</th>
           </tr>
         </thead>
         <tbody>
           {enhancedData.map((row, index) => (
-            <tr
-              key={index}
-              className={`hover:bg-gray-100 ${
-                index % 2 === 0 ? "bg-gray-50" : "bg-white"
-              }`}
-            >
-              <td className="px-4 py-2">{row.Ticker}</td>
-              <td className="px-4 py-2">{row.Name || "Unknown"}</td>
-              <td className="px-4 py-2">${row["Cost Basis"]}</td>
-              <td className="px-4 py-2">{row.Quantity}</td>
-              <td className="px-4 py-2">${row.Price}</td>
-              <td className="px-4 py-2">${row["Total Value"].toFixed(2)}</td>
-              <td className="px-4 py-2">{row["Portfolio %"]}%</td>
+            <tr key={index}>
+              <td>{row.Ticker}</td>
+              <td>{row.Name || "Unknown"}</td>
+              <td>${row["Cost Basis"]}</td>
+              <td>{row.Quantity}</td>
+              <td>${row.Price}</td>
+              <td>${row["Total Value"].toFixed(2)}</td>
+              <td>{row["Portfolio %"]}%</td>
               <td
-                className={`px-4 py-2 ${
+                className={`${
                   row["Total Gain/Loss"] >= 0
                     ? "text-green-600"
                     : "text-red-600"
@@ -85,7 +85,7 @@ const PortfolioTable = ({ data, stockData }) => {
                 ${row["Total Gain/Loss"].toFixed(2)}
               </td>
               <td
-                className={`px-4 py-2 ${
+                className={`${
                   row["% Total Gain/Loss"] >= 0
                     ? "text-green-600"
                     : "text-red-600"
@@ -96,22 +96,19 @@ const PortfolioTable = ({ data, stockData }) => {
             </tr>
           ))}
         </tbody>
-        <tfoot className="bg-gray-100 text-gray-800 font-bold">
-          <tr>
-            <td className="px-4 py-2" colSpan="5">
-              Summary
-            </td>
-            <td className="px-4 py-2" colSpan="2">${totalPortfolioValue.toFixed(2)}</td>
+        <tfoot>
+          <tr className="bg-base-200 text-lg">
+            <td colSpan="5">Summary</td>
+            <td colSpan="2">${totalPortfolioValue.toFixed(2)}</td>
             <td
-              className={`px-4 py-2 ${
+              className={`${
                 totalGainLoss >= 0 ? "text-green-600" : "text-red-600"
               }`}
-
             >
               ${totalGainLoss.toFixed(2)}
             </td>
             <td
-              className={`px-4 py-2 ${
+              className={`${
                 percentTotalGainLoss >= 0 ? "text-green-600" : "text-red-600"
               }`}
             >

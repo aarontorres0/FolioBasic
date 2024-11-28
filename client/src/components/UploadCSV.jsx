@@ -8,7 +8,6 @@ const UploadCSV = ({ onUpload }) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Parse CSV file
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
@@ -17,7 +16,7 @@ const UploadCSV = ({ onUpload }) => {
           setError('Invalid CSV format');
         } else {
           setError(null);
-          onUpload(result.data); // Pass parsed data to parent
+          onUpload(result.data);
         }
       },
     });
@@ -25,13 +24,17 @@ const UploadCSV = ({ onUpload }) => {
 
   return (
     <div className="p-4">
-      <input
-        type="file"
-        accept=".csv"
-        onChange={handleFileUpload}
-        className="file-input file-input-bordered"
-      />
-      {error && <p className="text-red-500 mt-2">{error}</p>}
+      <div className="form-control">
+        <label className="label">
+        </label>
+        <input
+          type="file"
+          accept=".csv"
+          onChange={handleFileUpload}
+          className="file-input file-input-bordered w-full max-w-xs"
+        />
+        {error && <p className="text-red-500 mt-2">{error}</p>}
+      </div>
     </div>
   );
 };
