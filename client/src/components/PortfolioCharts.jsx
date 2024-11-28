@@ -1,15 +1,15 @@
-import { useEffect, useRef, useState } from "react";
 import { Chart } from "chart.js/auto";
+import { useEffect, useRef, useState } from "react";
 
 const PortfolioCharts = ({ data, stockData }) => {
   const doughnutChartRef = useRef(null);
-  const barChartRef = useRef(null);
+  const portfolioChartRef = useRef(null);
+  const individualChartRef = useRef(null);
   const [historicalData, setHistoricalData] = useState([]);
 
   useEffect(() => {
     if (!data.length) return;
 
-    // Fetch historical data for all tickers
     const fetchHistoricalData = async () => {
       const fetchedData = await Promise.all(
         data.map(async (row) => {
@@ -27,10 +27,11 @@ const PortfolioCharts = ({ data, stockData }) => {
   }, [data]);
 
   useEffect(() => {
-    if (!historicalData.length) return;
+    if (!data.length || !historicalData.length) return;
 
-    const doughnutCtx = doughnutChartRef.current.getContext("2d");
-    new Chart(doughnutCtx, {
+    // Doughnut Chart
+    const doughnutContext = doughnutChartRef.current.getContext("2d");
+    new Chart(doughnutContext, {
       type: "doughnut",
       data: {
         labels: data.map((row) => row.Ticker),
@@ -53,6 +54,7 @@ const PortfolioCharts = ({ data, stockData }) => {
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           legend: { position: "top" },
           tooltip: {
@@ -72,8 +74,53 @@ const PortfolioCharts = ({ data, stockData }) => {
       },
     });
 
-    const barCtx = barChartRef.current.getContext("2d");
-    new Chart(barCtx, {
+    // Portfolio Value Chart
+    const portfolioContext = portfolioChartRef.current.getContext("2d");
+    const combinedPortfolioData = historicalData[0]?.data.map((_, dayIndex) => {
+      return historicalData.reduce((totalValue, stock) => {
+        const quantity = data.find(
+          (row) => row.Ticker === stock.ticker
+        )?.Quantity;
+        const closingPrice = stock.data[dayIndex]?.close;
+        return totalValue + closingPrice * quantity;
+      }, 0);
+    });
+    new Chart(portfolioContext, {
+      type: "line",
+      data: {
+        labels: historicalData[0]?.data.map(
+          (entry) => entry.date.split("T")[0]
+        ),
+        datasets: [
+          {
+            label: "Portfolio Value",
+            data: combinedPortfolioData,
+            borderColor: "#4BC0C0",
+            backgroundColor: "rgba(75, 192, 192, 0.5)",
+            tension: 0.3,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: "top" },
+        },
+        scales: {
+          x: {
+            title: { display: true, text: "Date" },
+          },
+          y: {
+            title: { display: true, text: "Portfolio Value (USD)" },
+            beginAtZero: false,
+          },
+        },
+      },
+    });
+
+    // Individual Performance Line Chart
+    const individualContext = individualChartRef.current.getContext("2d");
+    new Chart(individualContext, {
       type: "line",
       data: {
         labels: Array.from(
@@ -104,23 +151,32 @@ const PortfolioCharts = ({ data, stockData }) => {
     });
 
     return () => {
-      Chart.getChart(doughnutCtx)?.destroy();
-      Chart.getChart(barCtx)?.destroy();
+      Chart.getChart(doughnutContext)?.destroy();
+      Chart.getChart(portfolioContext)?.destroy();
+      Chart.getChart(individualContext)?.destroy();
     };
   }, [historicalData, stockData]);
 
   return (
-    <div className="grid grid-cols-2 gap-4 mt-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
       <div className="card bg-base-100 shadow-lg">
         <div className="card-body">
           <h2 className="card-title text-center">Portfolio Composition</h2>
-          <canvas ref={doughnutChartRef}></canvas>
+          <div className="relative w-full h-64">
+            <canvas ref={doughnutChartRef}></canvas>
+          </div>
         </div>
       </div>
       <div className="card bg-base-100 shadow-lg">
         <div className="card-body">
+          <h2 className="card-title text-center">Portfolio Value</h2>
+          <canvas ref={portfolioChartRef}></canvas>
+        </div>
+      </div>
+      <div className="col-span-1 md:col-span-2 card bg-base-100 shadow-lg">
+        <div className="card-body">
           <h2 className="card-title text-center">30-Day Performance</h2>
-          <canvas ref={barChartRef}></canvas>
+          <canvas ref={individualChartRef}></canvas>
         </div>
       </div>
     </div>
