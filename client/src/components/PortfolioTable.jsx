@@ -7,6 +7,8 @@ const PortfolioTable = ({ data, stockData, loading }) => {
     );
   }
 
+  const numberFormatter = new Intl.NumberFormat("en-US");
+
   const calculateRow = (row, totalPortfolioValue) => {
     const price = stockData[row.Ticker]?.price || 0;
     const name = stockData[row.Ticker]?.name || "Unknown";
@@ -22,9 +24,9 @@ const PortfolioTable = ({ data, stockData, loading }) => {
     return {
       ...row,
       Name: name,
-      Price: price.toFixed(2),
+      Price: price,
       "Total Value": totalValue,
-      "Portfolio %": portfolioPercentage.toFixed(2),
+      "Portfolio %": portfolioPercentage,
       "Total Gain/Loss": totalGainLoss,
       "% Total Gain/Loss": percentGainLoss,
     };
@@ -50,7 +52,7 @@ const PortfolioTable = ({ data, stockData, loading }) => {
   const percentTotalGainLoss = (totalGainLoss / totalCostBasis) * 100;
 
   return (
-    <div className="overflow-x-auto p-4 rounded-lg shadow-lg border">
+    <div className="overflow-x-auto rounded-lg shadow-lg border">
       <table className="table table-zebra w-full">
         <thead>
           <tr className="bg-base-200 text-lg">
@@ -70,11 +72,11 @@ const PortfolioTable = ({ data, stockData, loading }) => {
             <tr key={index}>
               <td>{row.Ticker}</td>
               <td>{row.Name || "Unknown"}</td>
-              <td>${row["Cost Basis"]}</td>
-              <td>{row.Quantity}</td>
-              <td>${row.Price}</td>
-              <td>${row["Total Value"].toFixed(2)}</td>
-              <td>{row["Portfolio %"]}%</td>
+              <td>${numberFormatter.format(row["Cost Basis"])}</td>
+              <td>{numberFormatter.format(row.Quantity)}</td>
+              <td>${numberFormatter.format(row.Price.toFixed(2))}</td>
+              <td>${numberFormatter.format(row["Total Value"].toFixed(2))}</td>
+              <td>{numberFormatter.format(row["Portfolio %"].toFixed(2))}%</td>
               <td
                 className={`${
                   row["Total Gain/Loss"] >= 0
@@ -82,7 +84,7 @@ const PortfolioTable = ({ data, stockData, loading }) => {
                     : "text-red-600"
                 }`}
               >
-                ${row["Total Gain/Loss"].toFixed(2)}
+                ${numberFormatter.format(row["Total Gain/Loss"].toFixed(2))}
               </td>
               <td
                 className={`${
@@ -91,7 +93,7 @@ const PortfolioTable = ({ data, stockData, loading }) => {
                     : "text-red-600"
                 }`}
               >
-                {row["% Total Gain/Loss"].toFixed(2)}%
+                {numberFormatter.format(row["% Total Gain/Loss"].toFixed(2))}%
               </td>
             </tr>
           ))}
@@ -99,20 +101,22 @@ const PortfolioTable = ({ data, stockData, loading }) => {
         <tfoot>
           <tr className="bg-base-200 text-lg">
             <td colSpan="5">Summary</td>
-            <td colSpan="2">${totalPortfolioValue.toFixed(2)}</td>
+            <td colSpan="2">
+              ${numberFormatter.format(totalPortfolioValue.toFixed(2))}
+            </td>
             <td
               className={`${
                 totalGainLoss >= 0 ? "text-green-600" : "text-red-600"
               }`}
             >
-              ${totalGainLoss.toFixed(2)}
+              ${numberFormatter.format(totalGainLoss.toFixed(2))}
             </td>
             <td
               className={`${
                 percentTotalGainLoss >= 0 ? "text-green-600" : "text-red-600"
               }`}
             >
-              {percentTotalGainLoss.toFixed(2)}%
+              {numberFormatter.format(percentTotalGainLoss.toFixed(2))}%
             </td>
           </tr>
         </tfoot>
