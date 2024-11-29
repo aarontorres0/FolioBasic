@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import Papa from 'papaparse';
+import Papa from "papaparse";
+import { useRef, useState } from "react";
 
 const UploadCSV = ({ onUpload }) => {
   const [error, setError] = useState(null);
+  const fileInputRef = useRef(null);
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -13,27 +14,37 @@ const UploadCSV = ({ onUpload }) => {
       skipEmptyLines: true,
       complete: (result) => {
         if (result.errors.length) {
-          setError('Invalid CSV format');
+          setError("Invalid CSV format");
         } else {
           setError(null);
           onUpload(result.data);
+          fileInputRef.current.value = "";
         }
       },
     });
   };
 
+  const triggerFileInput = () => {
+    fileInputRef.current.click();
+  };
+
   return (
-    <div className="p-4">
+    <div className="py-4">
       <div className="form-control">
-        <label className="label">
-        </label>
         <input
+          ref={fileInputRef}
           type="file"
           accept=".csv"
           onChange={handleFileUpload}
-          className="file-input file-input-bordered w-full max-w-xs"
+          className="hidden" // Hide the default file input
         />
-        {error && <p className="text-red-500 mt-2">{error}</p>}
+        <button
+          onClick={triggerFileInput}
+          className="btn btn-active btn-accent text-white"
+        >
+          Upload CSV File
+        </button>
+        {error && <p className="text-center text-red-500 mt-2">{error}</p>}
       </div>
     </div>
   );
