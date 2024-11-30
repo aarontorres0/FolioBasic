@@ -47,7 +47,7 @@ const UploadCSV = ({ onUpload }) => {
         />
         <button
           onClick={triggerFileInput}
-          className="btn btn-active btn-accent text-white hover:opacity-80 transition-opacity duration-300"
+          className="btn btn-accent text-white hover:btn-active opacity-80 transition-opacity duration-300"
         >
           Upload CSV File
         </button>
