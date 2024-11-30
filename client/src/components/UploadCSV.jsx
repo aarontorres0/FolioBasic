@@ -38,10 +38,7 @@ const UploadCSV = ({ onUpload }) => {
           onChange={handleFileUpload}
           className="hidden" // Hide the default file input
         />
-        <button
-          onClick={triggerFileInput}
-          className="btn btn-active btn-accent text-white"
-        >
+        <button className="btn btn-active btn-accent text-white hover:opacity-80 transition-opacity duration-300">
           Upload CSV File
         </button>
         {error && <p className="text-center text-red-500 mt-2">{error}</p>}

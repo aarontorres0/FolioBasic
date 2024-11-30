@@ -1,7 +1,7 @@
 import { Chart } from "chart.js/auto";
 import { useEffect, useRef, useState } from "react";
 
-const PortfolioCharts = ({ data, stockData }) => {
+const PortfolioCharts = ({ data, stockData, selectedCharts }) => {
   const doughnutChartRef = useRef(null);
   const portfolioChartRef = useRef(null);
   const individualChartRef = useRef(null);
@@ -30,95 +30,102 @@ const PortfolioCharts = ({ data, stockData }) => {
     if (!data.length || !historicalData.length) return;
 
     // Doughnut Chart
-    const doughnutContext = doughnutChartRef.current.getContext("2d");
-    new Chart(doughnutContext, {
-      type: "doughnut",
-      data: {
-        labels: data.map((row) => row.Ticker),
-        datasets: [
-          {
-            data: data.map(
-              (row) => stockData[row.Ticker]?.price * row.Quantity || 0
-            ),
-            backgroundColor: [
-              "#FF6384",
-              "#36A2EB",
-              "#FFCE56",
-              "#4BC0C0",
-              "#9966FF",
-              "#FF9F40",
-            ],
-            hoverOffset: 10,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: "top" },
-          tooltip: {
-            callbacks: {
-              label: (tooltipItem) => {
-                const ticker = tooltipItem.label;
-                const value = tooltipItem.raw.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                });
-                return `${ticker}: ${value}`;
+    if (doughnutChartRef.current) {
+      const doughnutContext = doughnutChartRef.current.getContext("2d");
+      new Chart(doughnutContext, {
+        type: "doughnut",
+        data: {
+          labels: data.map((row) => row.Ticker),
+          datasets: [
+            {
+              data: data.map(
+                (row) => stockData[row.Ticker]?.price * row.Quantity || 0
+              ),
+              backgroundColor: [
+                "#FF6384",
+                "#36A2EB",
+                "#FFCE56",
+                "#4BC0C0",
+                "#9966FF",
+                "#FF9F40",
+              ],
+              hoverOffset: 10,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: "top" },
+            tooltip: {
+              callbacks: {
+                label: (tooltipItem) => {
+                  const ticker = tooltipItem.label;
+                  const value = tooltipItem.raw.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  });
+                  return `${ticker}: ${value}`;
+                },
               },
             },
           },
+          cutout: "50%",
         },
-        cutout: "50%",
-      },
-    });
+      });
+    }
 
     // Portfolio Value Chart
-    const portfolioContext = portfolioChartRef.current.getContext("2d");
-    const combinedPortfolioData = historicalData[0]?.data.map((_, dayIndex) => {
-      return historicalData.reduce((totalValue, stock) => {
-        const quantity = data.find(
-          (row) => row.Ticker === stock.ticker
-        )?.Quantity;
-        const closingPrice = stock.data[dayIndex]?.close;
-        return totalValue + closingPrice * quantity;
-      }, 0);
-    });
-    new Chart(portfolioContext, {
-      type: "line",
-      data: {
-        labels: historicalData[0]?.data.map(
-          (entry) => entry.date.split("T")[0]
-        ),
-        datasets: [
-          {
-            label: "Portfolio Value",
-            data: combinedPortfolioData,
-            borderColor: "#4BC0C0",
-            backgroundColor: "rgba(75, 192, 192, 0.5)",
-            tension: 0.3,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: "top" },
+    if (portfolioChartRef.current) {
+      const portfolioContext = portfolioChartRef.current.getContext("2d");
+      const combinedPortfolioData = historicalData[0]?.data.map(
+        (_, dayIndex) => {
+          return historicalData.reduce((totalValue, stock) => {
+            const quantity = data.find(
+              (row) => row.Ticker === stock.ticker
+            )?.Quantity;
+            const closingPrice = stock.data[dayIndex]?.close;
+            return totalValue + closingPrice * quantity;
+          }, 0);
+        }
+      );
+      new Chart(portfolioContext, {
+        type: "line",
+        data: {
+          labels: historicalData[0]?.data.map(
+            (entry) => entry.date.split("T")[0]
+          ),
+          datasets: [
+            {
+              label: "Portfolio Value",
+              data: combinedPortfolioData,
+              borderColor: "#4BC0C0",
+              backgroundColor: "rgba(75, 192, 192, 0.5)",
+              tension: 0.3,
+            },
+          ],
         },
-        scales: {
-          x: {
-            title: { display: true, text: "Date" },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: "top" },
           },
-          y: {
-            title: { display: true, text: "Portfolio Value (USD)" },
-            beginAtZero: false,
+          scales: {
+            x: {
+              title: { display: true, text: "Date" },
+            },
+            y: {
+              title: { display: true, text: "Portfolio Value (USD)" },
+              beginAtZero: false,
+            },
           },
         },
-      },
-    });
+      });
+    }
 
     // Individual Performance Line Chart
+    if (individualChartRef.current) {
     const individualContext = individualChartRef.current.getContext("2d");
     new Chart(individualContext, {
       type: "line",
@@ -149,36 +156,58 @@ const PortfolioCharts = ({ data, stockData }) => {
         },
       },
     });
+  }
 
     return () => {
-      Chart.getChart(doughnutContext)?.destroy();
-      Chart.getChart(portfolioContext)?.destroy();
-      Chart.getChart(individualContext)?.destroy();
+      if (doughnutChartRef.current) {
+        const doughnutChart = Chart.getChart(doughnutChartRef.current);
+        if (doughnutChart) {
+          doughnutChart.destroy();
+        }
+      }
+      if (portfolioChartRef.current) {
+        const portfolioChart = Chart.getChart(portfolioChartRef.current);
+        if (portfolioChart) {
+          portfolioChart.destroy();
+        }
+      }
+      if (individualChartRef.current) {
+        const individualChart = Chart.getChart(individualChartRef.current);
+        if (individualChart) {
+          individualChart.destroy();
+        }
+      }
     };
-  }, [historicalData, stockData]);
+  }, [historicalData, stockData, selectedCharts]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-      <div className="card bg-base-100 shadow-lg">
-        <div className="card-body">
-          <h2 className="card-title text-center">Portfolio Composition</h2>
-          <div className="relative w-full h-64">
-            <canvas ref={doughnutChartRef}></canvas>
+      {selectedCharts.includes("composition") && data.length > 0 && (
+        <div className="card bg-base-100 shadow-lg">
+          <div className="card-body">
+            <h2 className="card-title text-center">Portfolio Composition</h2>
+            <div className="relative w-full h-64">
+              <canvas ref={doughnutChartRef}></canvas>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="card bg-base-100 shadow-lg">
-        <div className="card-body">
-          <h2 className="card-title text-center">Portfolio Value</h2>
-          <canvas ref={portfolioChartRef}></canvas>
+      )}
+      {selectedCharts.includes("value") && data.length > 0 && (
+        <div className="card bg-base-100 shadow-lg">
+          <div className="card-body">
+            <h2 className="card-title text-center">Portfolio Value</h2>
+            <canvas ref={portfolioChartRef}></canvas>
+          </div>
         </div>
-      </div>
-      <div className="col-span-1 md:col-span-2 card bg-base-100 shadow-lg">
-        <div className="card-body">
-          <h2 className="card-title text-center">30-Day Performance</h2>
-          <canvas ref={individualChartRef}></canvas>
+      )}
+      {selectedCharts.includes("performance") && data.length > 0 && (
+        <div className="col-span-1 md:col-span-2 card bg-base-100 shadow-lg">
+          <div className="card-body">
+            <h2 className="card-title text-center">30-Day Performance</h2>
+            <canvas ref={individualChartRef}></canvas>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
