@@ -16,8 +16,15 @@ const UploadCSV = ({ onUpload }) => {
         if (result.errors.length) {
           setError("Invalid CSV format");
         } else {
+          const groupedData = result.data.reduce((acc, row) => {
+            if (!acc[row.Account]) {
+              acc[row.Account] = [];
+            }
+            acc[row.Account].push(row);
+            return acc;
+          }, {});
           setError(null);
-          onUpload(result.data);
+          onUpload(groupedData);
           fileInputRef.current.value = "";
         }
       },

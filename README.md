@@ -58,15 +58,18 @@ To use FolioBasic, you need to upload a CSV file containing your portfolio data.
 
 ### Required Columns:
 
+- `Account`: The name or type of the investment account (e.g., 401k, IRA, Brokerage).
 - `Ticker`: Stock ticker symbol.
 - `Quantity`: Number of shares owned.
 - `Cost Basis`: Purchase price per share (in USD).
 
 ### Example CSV Content:
 
-```
-Ticker,Quantity,Cost Basis
-ABC,10,145.30
-DEF,5,110.00
-XYZ,8,250.25
+```csv
+Account,Ticker,Quantity,Cost Basis
+401k,ABC,10,145.30
+401k,DEF,5,110.00
+IRA,XYZ,8,250.25
+IRA,ABC,15,150.75
+HSA,DEF,3,75.50
 ```
