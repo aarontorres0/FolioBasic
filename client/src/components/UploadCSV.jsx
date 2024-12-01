@@ -1,7 +1,9 @@
 import Papa from "papaparse";
 import { useRef, useState } from "react";
+import { useAppContext } from "../AppContext";
 
-const UploadCSV = ({ onUpload }) => {
+const UploadCSV = () => {
+  const { setPortfolioData } = useAppContext();
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -24,7 +26,7 @@ const UploadCSV = ({ onUpload }) => {
             return acc;
           }, {});
           setError(null);
-          onUpload(groupedData);
+          setPortfolioData(groupedData);
           fileInputRef.current.value = "";
         }
       },
@@ -44,7 +46,7 @@ const UploadCSV = ({ onUpload }) => {
         onChange={handleFileUpload}
         className="hidden"
       />
-      <button 
+      <button
         onClick={triggerFileInput}
         className="btn btn-sm btn-neutral text-white w-full justify-start hover:btn-active opacity-80 transition-opacity duration-300"
       >

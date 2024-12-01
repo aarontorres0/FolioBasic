@@ -1,4 +1,7 @@
-const PortfolioTable = ({ data, stockData, loading }) => {
+import { useAppContext } from "../AppContext";
+
+const PortfolioTable = ({ data }) => {
+  const { loading, stockData } = useAppContext();
   if (loading) {
     return (
       <div className="flex justify-center items-center h-40">

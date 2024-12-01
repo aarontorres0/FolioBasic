@@ -1,7 +1,9 @@
 import { Chart } from "chart.js/auto";
 import { useEffect, useRef, useState } from "react";
+import { useAppContext } from "../AppContext";
 
-const PortfolioCharts = ({ data, stockData, selectedCharts }) => {
+const PortfolioCharts = ({ data, selectedCharts }) => {
+  const { stockData } = useAppContext();
   const doughnutChartRef = useRef(null);
   const portfolioChartRef = useRef(null);
   const individualChartRef = useRef(null);
@@ -126,37 +128,37 @@ const PortfolioCharts = ({ data, stockData, selectedCharts }) => {
 
     // Individual Performance Line Chart
     if (individualChartRef.current) {
-    const individualContext = individualChartRef.current.getContext("2d");
-    new Chart(individualContext, {
-      type: "line",
-      data: {
-        labels: Array.from(
-          { length: historicalData[0].data.length },
-          (_, i) => historicalData[0].data[i].date.split("T")[0]
-        ),
-        datasets: historicalData.map((stock, idx) => ({
-          label: stock.ticker,
-          data: stock.data.map((entry) => entry.close),
-          borderColor: `rgba(${50 * idx}, ${100 + 10 * idx}, 200, 1)`,
-          backgroundColor: `rgba(${50 * idx}, ${100 + 10 * idx}, 200, 0.5)`,
-          tension: 0.3,
-        })),
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: "top" },
+      const individualContext = individualChartRef.current.getContext("2d");
+      new Chart(individualContext, {
+        type: "line",
+        data: {
+          labels: Array.from(
+            { length: historicalData[0].data.length },
+            (_, i) => historicalData[0].data[i].date.split("T")[0]
+          ),
+          datasets: historicalData.map((stock, idx) => ({
+            label: stock.ticker,
+            data: stock.data.map((entry) => entry.close),
+            borderColor: `rgba(${50 * idx}, ${100 + 10 * idx}, 200, 1)`,
+            backgroundColor: `rgba(${50 * idx}, ${100 + 10 * idx}, 200, 0.5)`,
+            tension: 0.3,
+          })),
         },
-        scales: {
-          x: { title: { display: true, text: "Date" } },
-          y: {
-            title: { display: true, text: "Price (USD)" },
-            beginAtZero: false,
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: "top" },
+          },
+          scales: {
+            x: { title: { display: true, text: "Date" } },
+            y: {
+              title: { display: true, text: "Price (USD)" },
+              beginAtZero: false,
+            },
           },
         },
-      },
-    });
-  }
+      });
+    }
 
     return () => {
       if (doughnutChartRef.current) {
