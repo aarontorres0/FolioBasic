@@ -36,24 +36,22 @@ const UploadCSV = ({ onUpload }) => {
   };
 
   return (
-    <div className="py-4">
-      <div className="form-control">
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".csv"
-          onChange={handleFileUpload}
-          className="hidden" // Hide the default file input
-        />
-        <button
-          onClick={triggerFileInput}
-          className="btn btn-accent text-white hover:btn-active opacity-80 transition-opacity duration-300"
-        >
-          Upload CSV File
-        </button>
-        {error && <p className="text-center text-red-500 mt-2">{error}</p>}
-      </div>
-    </div>
+    <>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".csv"
+        onChange={handleFileUpload}
+        className="hidden"
+      />
+      <button 
+        onClick={triggerFileInput}
+        className="btn btn-sm btn-neutral text-white w-full justify-start hover:btn-active opacity-80 transition-opacity duration-300"
+      >
+        Upload CSV File
+      </button>
+      {error && <p className="text-error text-sm mt-1">{error}</p>}
+    </>
   );
 };
 

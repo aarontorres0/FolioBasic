@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import AccountSection from "./components/AccountSection";
 import Navbar from "./components/Navbar";
-import UploadCSV from "./components/UploadCSV";
 import { fetchStockData } from "./utils/stockData";
 
 function App() {
@@ -41,12 +40,16 @@ function App() {
         onSelectAccount={handleAccountSelect}
         isOpen={isNavbarOpen}
         onToggle={toggleNavbar}
+        onUpload={setPortfolioData}
       />
       <div className={`flex-1 overflow-auto transition-all duration-300 ${isNavbarOpen ? "ml-56" : "ml-16"}`}>
         <div className="p-4">
           <h1 className="text-3xl font-bold text-center mb-6">FolioBasic</h1>
-          <UploadCSV onUpload={setPortfolioData} />
-          {selectedAccount === "All" ? (
+          {accounts.length === 0 ? (
+            <div className="text-center text-xl mt-10">
+              Upload a CSV file with your portfolio data to get started.
+            </div>
+          ) : selectedAccount === "All" ? (
             Object.entries(portfolioData).map(([account, data]) => (
               <AccountSection
                 key={account}
