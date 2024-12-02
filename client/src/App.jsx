@@ -19,7 +19,7 @@ const App = () => {
       .map((row) => row.Ticker)
     if (allTickers.length > 0) {
       setLoading(true)
-      fetchStockData(allTickers, Object.values(portfolioData).flat())
+      fetchStockData(Object.values(portfolioData).flat())
         .then(setStockData)
         .finally(() => setLoading(false))
     }
@@ -31,9 +31,9 @@ const App = () => {
     <div className='flex h-screen overflow-hidden'>
       <Navbar accounts={accounts} />
       <div
-        className={`flex-1 overflow-auto transition-all duration-300 ${
-          isNavbarOpen ? 'ml-56' : 'ml-16'
-        }`}
+
+        className={`flex-1 overflow-auto transition-all duration-300 ${isNavbarOpen ? 'ml-56' : 'ml-16'
+                    }`}
       >
         <div className='p-4'>
           <h1 className='text-3xl font-bold text-center mb-6'>FolioBasic</h1>
