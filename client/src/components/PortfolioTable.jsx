@@ -33,8 +33,6 @@ const PortfolioTable = ({ data }) => {
             ? (totalValue / totalPortfolioValue) * 100
             : 0;
 
-        console.log(price)
-
         return {
             ...row,
             Name: name,
@@ -114,6 +112,9 @@ const PortfolioTable = ({ data }) => {
                                     }`}
                             >
                                 {numberFormatter.format(row["% Total Gain/Loss"].toFixed(2))}%
+                                {row.Quantity < 0 && (
+                                    <span className="bg-red-600 text-white font-bold px-2 py-1 rounded ml-2">Sold</span>
+                                )}
                             </td>
                         </tr>
                     ))}
