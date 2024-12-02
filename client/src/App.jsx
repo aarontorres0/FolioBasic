@@ -31,6 +31,7 @@ const App = () => {
     <div className='flex h-screen overflow-hidden'>
       <Navbar accounts={accounts} />
       <div
+
         className={`flex-1 overflow-auto transition-all duration-300 ${isNavbarOpen ? 'ml-56' : 'ml-16'
                     }`}
       >

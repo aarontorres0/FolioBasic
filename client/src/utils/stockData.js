@@ -1,3 +1,4 @@
+
 export const fetchStockData = async (portfolioData) => {
   const stockData = {}
   let totalPortfolioValue = 0
@@ -6,7 +7,6 @@ export const fetchStockData = async (portfolioData) => {
     try {
       const shares = row.Quantity
       const ticker = row.Ticker
-
       const response = await fetch(`http://localhost:5000/api/quote?symbol=${ticker}`)
       const result = await response.json()
 

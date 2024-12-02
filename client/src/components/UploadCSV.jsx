@@ -7,7 +7,7 @@ const UploadCSV = () => {
   const { setPortfolioData } = useAppContext()
   const [error, setError] = useState(null)
   const fileInputRef = useRef(null)
-
+  
   const handleFileUpload = async (event) => {
     const file = event.target.files[0]
     if (!file) return

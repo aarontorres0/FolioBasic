@@ -19,7 +19,7 @@ app.get('/api/quote', async (req, res) => {
 
 app.get('/api/calculate', async (req, res) => {
   const { symbol, sellDate } = req.query
-
+  
   try {
     const historical = await yahooFinance.historical(symbol, {
       period1: new Date(sellDate)
