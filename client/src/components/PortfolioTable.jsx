@@ -13,9 +13,18 @@ const PortfolioTable = ({ data }) => {
     const numberFormatter = new Intl.NumberFormat("en-US");
 
     const calculateRow = (row, totalPortfolioValue) => {
-        const price = stockData[row.Ticker]?.price || 0;
+        let quantity, price
+
+        if (row.Quantity < 0) {
+            quantity = -row.Quantity;
+            price = row["SellPrice"];
+        } else {
+            price = stockData[row.Ticker]?.price || 0;
+            quantity = row.Quantity;
+        }
+
         const name = stockData[row.Ticker]?.name || "Unknown";
-        const totalValue = price * (row.Quantity < 0 ? -row.Quantity : row.Quantity);
+        const totalValue = price * quantity;
         const costBasis = row["Cost Basis"] * (row.Quantity < 0 ? -row.Quantity : row.Quantity)
         const totalGainLoss = totalValue - costBasis;
         const percentGainLoss = (totalGainLoss / costBasis) * 100;
@@ -23,6 +32,8 @@ const PortfolioTable = ({ data }) => {
         const portfolioPercentage = totalPortfolioValue
             ? (totalValue / totalPortfolioValue) * 100
             : 0;
+
+        console.log(price)
 
         return {
             ...row,
@@ -36,8 +47,16 @@ const PortfolioTable = ({ data }) => {
     };
 
     const totalPortfolioValue = data.reduce((sum, row) => {
-        const price = stockData[row.Ticker]?.price || 0;
-        return sum + price * row.Quantity;
+        let quantity, price
+
+        if (row.Quantity < 0) {
+            quantity = -row.Quantity;
+            price = row["SellPrice"];
+        } else {
+            price = stockData[row.Ticker]?.price || 0;
+            quantity = row.Quantity;
+        }
+        return sum + price * (row.Quantity < 0 ? -row.Quantity : row.Quantity);
     }, 0);
 
     const enhancedData = data.map((row) =>
