@@ -1,32 +1,32 @@
-import React from 'react'
-import { useAppContext } from '../AppContext'
-import UploadCSV from './UploadCSV'
+import React from "react";
+import { useAppContext } from "../AppContext";
+import UploadCSV from "./UploadCSV";
 
 const Navbar = ({ accounts }) => {
-  const { isNavbarOpen, setIsNavbarOpen, selectedAccount, setSelectedAccount } = useAppContext()
+  const { isNavbarOpen, setIsNavbarOpen, selectedAccount, setSelectedAccount } = useAppContext();
 
   const toggleNavbar = () => {
-    setIsNavbarOpen(!isNavbarOpen)
-  }
+    setIsNavbarOpen(!isNavbarOpen);
+  };
 
   const handleAccountSelect = (account) => {
-    setSelectedAccount(account)
-  }
+    setSelectedAccount(account);
+  };
 
   return (
     <div
       className={`fixed left-0 top-0 h-full bg-base-100 shadow-lg transition-all duration-300 ${
-        isNavbarOpen ? 'w-56' : 'w-16'
+        isNavbarOpen ? "w-56" : "w-16"
       } z-10`}
     >
       <button
         onClick={toggleNavbar}
-        className='btn btn-sm btn-circle btn-accent text-white absolute top-4 right-4'
+        className="btn btn-sm btn-circle btn-accent text-white absolute top-4 right-4"
       >
-        {isNavbarOpen ? '←' : '→'}
+        {isNavbarOpen ? "←" : "→"}
       </button>
-      <nav className='mt-16 p-2'>
-        <ul className='menu menu-compact gap-2'>
+      <nav className="mt-16 p-2">
+        <ul className="menu menu-compact gap-2">
           {isNavbarOpen && (
             <>
               {accounts.length > 0 && (
@@ -34,11 +34,11 @@ const Navbar = ({ accounts }) => {
                   <li>
                     <button
                       className={`btn btn-sm w-full justify-start ${
-                        selectedAccount === 'All'
-                          ? 'btn-accent text-white'
-                          : 'btn-outline'
+                        selectedAccount === "All"
+                          ? "btn-accent text-white"
+                          : "btn-outline"
                       }`}
-                      onClick={() => handleAccountSelect('All')}
+                      onClick={() => handleAccountSelect("All")}
                     >
                       All Accounts
                     </button>
@@ -48,17 +48,17 @@ const Navbar = ({ accounts }) => {
                       <button
                         className={`btn btn-sm w-full justify-start ${
                           selectedAccount === account
-                            ? 'btn-accent text-white'
-                            : 'btn-outline'
+                            ? "btn-accent text-white"
+                            : "btn-outline"
                         }`}
                         onClick={() => handleAccountSelect(account)}
                       >
-                        <span className='truncate'>{account}</span>
+                        <span className="truncate">{account}</span>
                       </button>
                     </li>
                   ))}
-                  <div className='my-4'>
-                    <div className='w-4/5 mx-auto border-t border-base-300' />
+                  <div className="my-4">
+                    <div className="w-4/5 mx-auto border-t border-base-300"></div>
                   </div>
                 </>
               )}
@@ -70,7 +70,7 @@ const Navbar = ({ accounts }) => {
         </ul>
       </nav>
     </div>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

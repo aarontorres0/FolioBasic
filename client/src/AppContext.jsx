@@ -1,21 +1,21 @@
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState } from "react";
 
-const AppContext = createContext()
+const AppContext = createContext();
 
 export const useAppContext = () => {
-  const context = useContext(AppContext)
+  const context = useContext(AppContext);
   if (!context) {
-    throw new Error('useAppContext must be used within an AppProvider')
+    throw new Error("useAppContext must be used within an AppProvider");
   }
-  return context
-}
+  return context;
+};
 
 export const AppProvider = ({ children }) => {
-  const [loading, setLoading] = useState(false)
-  const [isNavbarOpen, setIsNavbarOpen] = useState(true)
-  const [portfolioData, setPortfolioData] = useState({})
-  const [selectedAccount, setSelectedAccount] = useState('All')
-  const [stockData, setStockData] = useState({})
+  const [loading, setLoading] = useState(false);
+  const [isNavbarOpen, setIsNavbarOpen] = useState(true);
+  const [portfolioData, setPortfolioData] = useState({});
+  const [selectedAccount, setSelectedAccount] = useState("All");
+  const [stockData, setStockData] = useState({});
 
   const value = {
     loading,
@@ -27,8 +27,8 @@ export const AppProvider = ({ children }) => {
     selectedAccount,
     setSelectedAccount,
     stockData,
-    setStockData
-  }
+    setStockData,
+  };
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>
-}
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+};
