@@ -17,9 +17,23 @@ app.get('/api/quote', async (req, res) => {
   }
 })
 
+app.get('/api/calculate', async (req, res) => {
+  const { symbol, sellDate } = req.query
+  
+  try {
+    const historical = await yahooFinance.historical(symbol, {
+      period1: new Date(sellDate)
+    })
+    const sellPrice = historical[0].close
+    res.json(sellPrice)
+  } catch (error) {
+    console.error(`Error fetching selling data for ${symbol} on ${sellDate}:`, error)
+    res.status(500).json({ error: 'Failed to fetch selling data' })
+  }
+})
+
 app.get('/api/historical', async (req, res) => {
   const { symbol } = req.query
-
   try {
     const historical = await yahooFinance.historical(symbol, {
       period1: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
