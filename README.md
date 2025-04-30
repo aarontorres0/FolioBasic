@@ -66,10 +66,10 @@ To use FolioBasic, you need to upload a CSV file containing your portfolio data.
 ### Example CSV Content:
 
 ```csv
-Account,Ticker,Quantity,Cost Basis
-401k,ABC,10,145.30
-401k,DEF,5,110.00
-IRA,XYZ,8,250.25
-IRA,ABC,15,150.75
-HSA,DEF,3,75.50
+Account,Ticker,Sell Date,Quantity,Cost Basis
+401k,AAPL,None,10,145.30
+401k,AAPL,2024-11-10,-5,110.00
+IRA,AAPL,None,8,250.25
+IRA,AAPL,None,15,150.75
+HSA,AAPL,None,3,75.50
 ```

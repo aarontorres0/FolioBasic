@@ -1,9 +1,12 @@
-export const fetchStockData = async (tickers, portfolioData) => {
+
+export const fetchStockData = async (portfolioData) => {
   const stockData = {}
   let totalPortfolioValue = 0
 
-  for (const ticker of tickers) {
+  for (const row of portfolioData) {
     try {
+      const shares = row.Quantity
+      const ticker = row.Ticker
       const response = await fetch(`http://localhost:5000/api/quote?symbol=${ticker}`)
       const result = await response.json()
 
@@ -11,10 +14,8 @@ export const fetchStockData = async (tickers, portfolioData) => {
       if (!result || !result.symbol || !result.regularMarketPrice) {
         throw new Error(`No stock data found for ${ticker}`)
       }
-
-      const price = result.regularMarketPrice
+      const price = parseFloat(result.regularMarketPrice)
       const name = result.shortName
-      const shares = portfolioData.find((row) => row.Ticker === ticker)?.Quantity || 0
 
       stockData[ticker] = { price, name }
       totalPortfolioValue += price * shares
@@ -25,4 +26,15 @@ export const fetchStockData = async (tickers, portfolioData) => {
 
   stockData.totalPortfolioValue = totalPortfolioValue
   return stockData
+}
+
+export const fetchSellPrice = async (ticker, sellDate, costBasis) => {
+  let price
+  try {
+    const response = await fetch(`http://localhost:5000/api/calculate?symbol=${ticker}&buyPrice=${costBasis}&sellDate=${sellDate}`)
+    price = await response.json()
+  } catch (error) {
+    console.error(`Error fetching sell price for ${ticker}:`, error)
+  }
+  return parseFloat(price)
 }

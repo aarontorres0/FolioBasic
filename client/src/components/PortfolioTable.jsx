@@ -13,10 +13,19 @@ const PortfolioTable = ({ data }) => {
   const numberFormatter = new Intl.NumberFormat('en-US')
 
   const calculateRow = (row, totalPortfolioValue) => {
-    const price = stockData[row.Ticker]?.price || 0
+    let quantity, price
+
+    if (row.Quantity < 0) {
+      quantity = -row.Quantity
+      price = row.SellPrice
+    } else {
+      price = stockData[row.Ticker]?.price || 0
+      quantity = row.Quantity
+    }
+
     const name = stockData[row.Ticker]?.name || 'Unknown'
-    const totalValue = price * row.Quantity
-    const costBasis = row['Cost Basis'] * row.Quantity
+    const totalValue = price * quantity
+    const costBasis = row['Cost Basis'] * (row.Quantity < 0 ? -row.Quantity : row.Quantity)
     const totalGainLoss = totalValue - costBasis
     const percentGainLoss = (totalGainLoss / costBasis) * 100
 
@@ -36,8 +45,16 @@ const PortfolioTable = ({ data }) => {
   }
 
   const totalPortfolioValue = data.reduce((sum, row) => {
-    const price = stockData[row.Ticker]?.price || 0
-    return sum + price * row.Quantity
+    let quantity, price
+
+    if (row.Quantity < 0) {
+      quantity = -row.Quantity
+      price = row.SellPrice
+    } else {
+      price = stockData[row.Ticker]?.price || 0
+      quantity = row.Quantity
+    }
+    return sum + price * (row.Quantity < 0 ? -row.Quantity : row.Quantity)
   }, 0)
 
   const enhancedData = data.map((row) =>
@@ -81,22 +98,23 @@ const PortfolioTable = ({ data }) => {
               <td>${numberFormatter.format(row['Total Value'].toFixed(2))}</td>
               <td>{numberFormatter.format(row['Portfolio %'].toFixed(2))}%</td>
               <td
-                className={`${
-                  row['Total Gain/Loss'] >= 0
-                    ? 'text-green-600'
-                    : 'text-red-600'
-                }`}
+                className={`${row['Total Gain/Loss'] >= 0
+                                    ? 'text-green-600'
+                                    : 'text-red-600'
+                                    }`}
               >
                 ${numberFormatter.format(row['Total Gain/Loss'].toFixed(2))}
               </td>
               <td
-                className={`${
-                  row['% Total Gain/Loss'] >= 0
-                    ? 'text-green-600'
-                    : 'text-red-600'
-                }`}
+                className={`${row['% Total Gain/Loss'] >= 0
+                                    ? 'text-green-600'
+                                    : 'text-red-600'
+                                    }`}
               >
                 {numberFormatter.format(row['% Total Gain/Loss'].toFixed(2))}%
+                {row.Quantity < 0 && (
+                  <span className='bg-red-600 text-white font-bold px-2 py-1 rounded ml-2'>Sold</span>
+                )}
               </td>
             </tr>
           ))}
@@ -108,16 +126,14 @@ const PortfolioTable = ({ data }) => {
               ${numberFormatter.format(totalPortfolioValue.toFixed(2))}
             </td>
             <td
-              className={`${
-                totalGainLoss >= 0 ? 'text-green-600' : 'text-red-600'
-              }`}
+              className={`${totalGainLoss >= 0 ? 'text-green-600' : 'text-red-600'
+                                }`}
             >
               ${numberFormatter.format(totalGainLoss.toFixed(2))}
             </td>
             <td
-              className={`${
-                percentTotalGainLoss >= 0 ? 'text-green-600' : 'text-red-600'
-              }`}
+              className={`${percentTotalGainLoss >= 0 ? 'text-green-600' : 'text-red-600'
+                                }`}
             >
               {numberFormatter.format(percentTotalGainLoss.toFixed(2))}%
             </td>
